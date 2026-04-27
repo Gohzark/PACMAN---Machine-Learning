@@ -24,7 +24,7 @@ public class main_standardMode {
 		///// Paramétrage à modifier ici : choix du niveau et de la stratégie
 	
 		////Choix du niveau
-		int level = 1;
+		int level = 0;
 		
 		
 		////Choix de la strategie du pacman 
