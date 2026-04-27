@@ -3,6 +3,7 @@ package motor;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 import org.apache.commons.lang3.SerializationUtils;
 
@@ -151,6 +152,25 @@ public class PacmanGame extends Game  {
 		return false;
 	}
 	
+
+	public AgentAction getRandomAllowedAction (ArrayList<AgentAction> legalActions) {
+		Random randomNb = new Random();
+		int nb = randomNb.nextInt(5); 
+		switch (nb) {
+			case 0:
+				return new AgentAction(0);
+			case 1:
+				return new AgentAction(1);
+			case 2:
+				return new AgentAction(2);
+			case 3:
+				return new AgentAction(3);
+			case 4:
+				return new AgentAction(4);
+			default:
+				return new AgentAction(4);
+		}
+	}
 	
 	public boolean isGhostAtPosition(int x, int y) {
 		

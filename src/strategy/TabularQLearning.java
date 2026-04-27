@@ -1,19 +1,14 @@
 package strategy;
 
 import java.util.ArrayList;
-import java.util.Random;
-
-import agent.Agent;
 import agent.AgentAction;
-import agent.PositionAgent;
-import motor.Maze;
 import motor.PacmanGame;
 import neuralNetwork.TrainExample;
 
 import java.util.HashMap;
 
 
-public class TabularQLearning  extends QLearningStrategy{
+public class TabularQLearning extends QLearningStrategy{
 
 
 	HashMap<String, double[]> QTable;
@@ -49,41 +44,75 @@ public class TabularQLearning  extends QLearningStrategy{
 
 	}
 
-	
+	public String encodeState(PacmanGame pacmanGame) {
+		int x = pacmanGame.getMaze().getSizeX();
+		int y = pacmanGame.getMaze().getSizeY();
+		String encodeState = "";
+		for (int i=0; i<x; i++) {
+			for (int j=0; j<y; j++) {
+				if (pacmanGame.isCapsuleAtPosition(i, j)) {
+					encodeState+="c";
+				}
+				else if (pacmanGame.isGumAtPosition(i, j)) {
+					encodeState+="g";
+				}
+				else if (pacmanGame.isWallAtPosition(i, j)) {
+					encodeState+="w";
+				}
+				else if (pacmanGame.isGhostAtPosition(i, j)) {
+					encodeState+="G";
+				}
+				else if (pacmanGame.isPacmanAtPosition(i, j)) {
+					encodeState+="P";
+				}
+				else {
+					encodeState+="e";
+				}
+			}
+		}
+		return encodeState;
+	} 
 
 
 
-
-
+	//TODO
 	@Override
 	public AgentAction chooseAction(PacmanGame state) {
-
-		return null;
-
+		String encodedState = encodeState(state);
+		QTable.putIfAbsent(encodedState, new double[4]);
+		ArrayList<AgentAction> legalActions = state.getLegalPacmanActions();
+		#exploration
+		if(Math.random()< this.current_epsilon) {
+			return state.getRandomAllowedAction(legalActions);
+		}
+		#exploitation 
+		else {
+			double maxval = this.QTable.get(encodedState)[0];
+			int bestAction = 0;
+			for (int i=1; i<legalActions.length; i++) {
+				if (this.QTable.get(encodedState)[i] > maxval) {
+					maxval = this.QTable.get(encodedState)[legalActions[i].get_idAction()];
+					bestAction = legalActions[i].get_idAction();
+				}
+			}
+			return new AgentAction(bestAction);
+		}
 	}
-
-
-
-
 
 	@Override
 	public void update(PacmanGame state, PacmanGame nextState, AgentAction action, double reward, boolean isFinalState) {
-
-
-
+		String encodedState = encodeState(state);
+		String encodedNextState = encodeState(nextState);
+		double maxNextQ = this.QTable.get(encodedNextState)[0];
+		for (double q : this.QTable.get(encodedNextState)) {
+			if (q > maxNextQ)
+				maxNextQ = q;
+		} 
+		this.QTable.get(encodedState)[action.get_idAction()] += this.learning_rate * (reward + this.gamma * maxNextQ - this.QTable.get(encodedState)[action.get_idAction()]);
 	}
 
-
-
-	@Override
 	public void learn(ArrayList<TrainExample> trainExamples) {
-		// TODO Auto-generated method stub
+
 	}
-
-
-
-
-
-
 
 }
