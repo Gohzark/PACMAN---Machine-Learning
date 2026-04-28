@@ -20,6 +20,7 @@ public interface Strategy {
 
 	public boolean isModeTrain();
 
+	public String toString();
 	
 
 }

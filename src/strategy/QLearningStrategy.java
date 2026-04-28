@@ -2,7 +2,6 @@ package strategy;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-
 import agent.AgentAction;
 import agent.PositionAgent;
 import motor.PacmanGame;
@@ -15,11 +14,7 @@ public abstract class QLearningStrategy implements Strategy{
 	protected double current_epsilon;
 	protected double gamma;
 	protected double learningRate;
-	
 	private boolean modeTrain;
-	
-	
-	
 	public ArrayList<TrainExample> trainExamples  = new ArrayList<TrainExample>();
 	
 	int sizeMazeX;

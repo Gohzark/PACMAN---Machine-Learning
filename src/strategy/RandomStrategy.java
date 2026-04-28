@@ -49,6 +49,6 @@ public class RandomStrategy implements Strategy, Serializable{
 		return false;
 	}
 
-
+	
 
 }

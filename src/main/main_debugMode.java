@@ -15,7 +15,7 @@ public class main_debugMode {
 
 	public static void main(String[] args) {
 		
-
+		System.out.println("yo");
 		///// Paramétrage à modifier ici : choix du niveau et de la stratégie
 	
 		////Choix du niveau
@@ -96,7 +96,7 @@ public class main_debugMode {
 		_game.initGameQLearning(strat, nightmareMode);
 		
 		GameController controller = GameController.getInstance(_game);
-		View _view = View.getInstance(controller, _game, false);
+		View view = View.getInstance(controller, _game, false);
 
 	}
 	

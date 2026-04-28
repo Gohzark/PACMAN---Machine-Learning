@@ -21,9 +21,9 @@ public class TabularQLearning extends QLearningStrategy{
 
 
 
-	public TabularQLearning( double epsilon, double gamma, double alpha,  int sizeMazeX, int sizeMazeY, int nbWalls) {
+	public TabularQLearning( double epsilon, double gamma, double learningrate,  int sizeMazeX, int sizeMazeY, int nbWalls) {
 		
-		super( epsilon, gamma, alpha, sizeMazeX, sizeMazeY);
+		super( epsilon, gamma, learningrate, sizeMazeX, sizeMazeY);
 
 		this.sizeMazeX = sizeMazeX;
 		this.sizeMazeY = sizeMazeY;
@@ -74,25 +74,23 @@ public class TabularQLearning extends QLearningStrategy{
 	} 
 
 
-
-	//TODO
 	@Override
 	public AgentAction chooseAction(PacmanGame state) {
 		String encodedState = encodeState(state);
-		QTable.putIfAbsent(encodedState, new double[4]);
+		QTable.putIfAbsent(encodedState, new double[5]);
 		ArrayList<AgentAction> legalActions = state.getLegalPacmanActions();
-		#exploration
-		if(Math.random()< this.current_epsilon) {
+		//exploration
+		if(Math.random() < this.current_epsilon) {
 			return state.getRandomAllowedAction(legalActions);
 		}
-		#exploitation 
+		//exploitation 
 		else {
-			double maxval = this.QTable.get(encodedState)[0];
+			double maxval = Double.NEGATIVE_INFINITY;
 			int bestAction = 0;
-			for (int i=1; i<legalActions.length; i++) {
-				if (this.QTable.get(encodedState)[i] > maxval) {
-					maxval = this.QTable.get(encodedState)[legalActions[i].get_idAction()];
-					bestAction = legalActions[i].get_idAction();
+			for (int i=0; i<legalActions.size(); i++) {
+				if (this.QTable.get(encodedState)[legalActions.get(i).get_idAction()] > maxval) {
+					maxval = this.QTable.get(encodedState)[legalActions.get(i).get_idAction()];
+					bestAction = legalActions.get(i).get_idAction();
 				}
 			}
 			return new AgentAction(bestAction);
@@ -103,16 +101,24 @@ public class TabularQLearning extends QLearningStrategy{
 	public void update(PacmanGame state, PacmanGame nextState, AgentAction action, double reward, boolean isFinalState) {
 		String encodedState = encodeState(state);
 		String encodedNextState = encodeState(nextState);
-		double maxNextQ = this.QTable.get(encodedNextState)[0];
-		for (double q : this.QTable.get(encodedNextState)) {
-			if (q > maxNextQ)
-				maxNextQ = q;
+		QTable.putIfAbsent(encodedState, new double[5]);
+    	QTable.putIfAbsent(encodedNextState, new double[5]);
+		double maxNextQ = Double.NEGATIVE_INFINITY;
+		ArrayList<AgentAction> legalActions = state.getLegalPacmanActions();
+		for (AgentAction q : legalActions) {
+			if (QTable.get(encodedNextState)[q.get_idAction()] > maxNextQ) {
+				maxNextQ = QTable.get(encodedNextState)[q.get_idAction()];
+			}
 		} 
-		this.QTable.get(encodedState)[action.get_idAction()] += this.learning_rate * (reward + this.gamma * maxNextQ - this.QTable.get(encodedState)[action.get_idAction()]);
+		this.QTable.get(encodedState)[action.get_idAction()] += this.learningRate * (reward + this.gamma * maxNextQ - this.QTable.get(encodedState)[action.get_idAction()]);	
 	}
 
 	public void learn(ArrayList<TrainExample> trainExamples) {
 
 	}
 
+	@Override
+	public String toString() {
+		return "Tabular Q-Learning";
+	}
 }

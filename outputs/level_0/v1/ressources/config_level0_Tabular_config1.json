@@ -1,0 +1,7 @@
+{
+  "strategy": "Tabular Q-Learning",
+  "level": 0,
+  "gamma": 0.95,
+  "epsilon": 0.2,
+  "learningRate": 0.1
+}

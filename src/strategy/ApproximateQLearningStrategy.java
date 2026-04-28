@@ -52,7 +52,10 @@ public class ApproximateQLearningStrategy extends QLearningStrategy{
 		// Not used here	
 	}
 	
-	
+	@Override
+	public String toString() {
+		return "Approximate Q-Learning";
+	}
 	
 	
 	
