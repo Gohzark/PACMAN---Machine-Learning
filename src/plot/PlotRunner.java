@@ -20,13 +20,13 @@ public class PlotRunner {
     private static final String PYTHON = "python3";
     private static final String SCRIPT = "src/plot/plot_scores.py";
 
-    public static void generate(Path csvPath, Path configPath, Path outputDir) throws IOException, InterruptedException {
+    public static void generate(Path outputDir, String version) throws IOException, InterruptedException {
         List<String> command = List.of(
                 PYTHON,
                 SCRIPT,
-                csvPath.toAbsolutePath().toString(),
-                configPath.toAbsolutePath().toString(),
-                outputDir.toAbsolutePath().toString()
+                outputDir.toAbsolutePath().toString()+"/"+version+"_scores.csv",
+                outputDir.toAbsolutePath().toString()+"/"+version+"_config.json",
+                outputDir.toAbsolutePath().toString()+"/"+version+"_plot_scores.png"
         );
 
         ProcessBuilder pb = new ProcessBuilder(command);

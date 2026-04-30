@@ -34,18 +34,16 @@ def plot_score(ax, x, y, label, color, config_text):
 
 def main():
     if len(sys.argv) != 4:
-        print("Usage: python3 plot_scores.py <input.csv> <input_config.json> <output_dir>")
+        print("Usage: python3 plot_scores.py <input.csv> <input_config.json> <plot_scores.png>")
         sys.exit(1)
 
     csv_path = sys.argv[1]
     config_path = sys.argv[2]
-    output_dir = sys.argv[3]
+    plot_scores_path = sys.argv[3]
 
     if not os.path.isfile(csv_path):
         print(f"Erreur : fichier introuvable : {csv_path}")
         sys.exit(1)
-
-    os.makedirs(output_dir, exist_ok=True)
 
     config = load_config(config_path)
     config_text = config_to_text(config)
@@ -56,25 +54,18 @@ def main():
     if missing:
         print(f"Erreur : colonnes manquantes dans le CSV : {missing}")
         sys.exit(1)
+
     df.columns = df.columns.str.strip().str.lower()
 
-    # --- Plot train_score ---
-    fig, ax = plt.subplots(figsize=(8, 4))
+    fig, ax = plt.subplots(figsize=(10, 5))
     plot_score(ax, df["generation"], df["train_score"], "Train Score", "#2196F3", config_text)
-    fig.tight_layout()
-    train_path = os.path.join(output_dir, "train_score.png")
-    fig.savefig(train_path, dpi=150, bbox_inches="tight")
-    plt.close(fig)
-    print(f"Saved: {train_path}")
-
-    # --- Plot test_score ---
-    fig, ax = plt.subplots(figsize=(8, 4))
     plot_score(ax, df["generation"], df["test_score"], "Test Score", "#FF5722", config_text)
+    ax.legend()
     fig.tight_layout()
-    test_path = os.path.join(output_dir, "test_score.png")
-    fig.savefig(test_path, dpi=150, bbox_inches="tight")
+
+    fig.savefig(plot_scores_path, dpi=150, bbox_inches="tight")
     plt.close(fig)
-    print(f"Saved: {test_path}")
+    print(f"Saved: {plot_scores_path}")
 
 if __name__ == "__main__":
     main()
