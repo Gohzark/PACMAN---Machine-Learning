@@ -2,6 +2,12 @@
 
 Ce projet permet d'exécuter quelques algorithmes d'apprentissage artificiel basés sur le Q-Learning dans le cadre du jeu PACMAN.
 
+## Installation
+
+```bash
+git clone https://github.com/Gohzark/PACMAN---Machine-Learning.git
+```
+
 ## Prérequis
 
 - Java
