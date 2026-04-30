@@ -2,11 +2,12 @@ package motor;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
 import org.apache.commons.lang3.SerializationUtils;
-
+import java.util.Queue;
 import agent.Agent;
 import agent.AgentAction;
 import agent.PositionAgent;
@@ -45,6 +46,13 @@ public class PacmanGame extends Game  {
 	private int nbFood;
 	
 	boolean nightmareMode = false;
+
+	public enum gameElement {
+		gum,
+		capsule,
+		ghost
+	}
+	
 	
 	public PacmanGame(String chemin_maze, int maximum_laps, long speed) {
 		super(maximum_laps, speed);
@@ -134,20 +142,86 @@ public class PacmanGame extends Game  {
 		return nb;
 	}
 	
-	
+	//Algo BFS
+	public double getDistanceToClosest (PositionAgent startingPosition, gameElement element) {
+		//System.out.println("Calculating distance to closest " + element);
+		PositionAgent pos = new PositionAgent(startingPosition.getX(), startingPosition.getY(), 0);
+		ArrayList<PositionAgent> exploredPositions = new ArrayList<>();
+		Queue<PositionAgent> positionstoExplore = new LinkedList<>();
+		Queue<Double> distance_positionstoExplore = new LinkedList<>();
+		positionstoExplore.add(pos);
+		distance_positionstoExplore.add(0.0);
+		while(!positionstoExplore.isEmpty()) {
+			//System.out.println("Positions to explore: " + positionstoExplore.size());
+			PositionAgent position_chosen = positionstoExplore.poll();
+			exploredPositions.add(position_chosen);
+			double distance = distance_positionstoExplore.poll();
+			if (distance > 10) {
+				return 10;
+			}
+			ArrayList<AgentAction> possibleActions = this.getLegalActions(position_chosen);
+			switch (element) {
+					case gum:
+						if (this.isGumAtPosition(position_chosen.getX(), position_chosen.getY())) {
+							return distance;
+						}
+						break;
+					case capsule:
+						if (this.isCapsuleAtPosition(position_chosen.getX(), position_chosen.getY())) {
+							return distance;
+						}
+						break;
+					case ghost:
+						if (this.isGhostAtPosition(position_chosen.getX(), position_chosen.getY())) {
+							return distance;
+						}
+						break;
+					default:
+						System.out.println("Element not recognized");
+						break;
+				}
+			for (AgentAction action : possibleActions) {
+				PositionAgent newPos = this.movePosition(position_chosen, action);
+				if (!positionstoExplore.contains(newPos) && !exploredPositions.contains(newPos)) {
+					positionstoExplore.add(newPos);
+					//System.err.println("Adding position to explore: " + newPos);
+					distance_positionstoExplore.add(distance + 1);
+				}
+			}
+		}
+		//System.out.println("Fin BFS - element not found");
+
+		return 10;
+	}
+
 	public boolean isLegalMove(Agent agent, AgentAction action) {
 		if (agent.is_alive()) {
-			return !_maze.isWall(agent.get_position().getX() + action.get_vx(),
-					agent.get_position().getY() + action.get_vy());
+			return isLegalMove(agent.get_position(), action);
 		}
 		return false;
+	}
+
+	public boolean isLegalMove(PositionAgent pos, AgentAction action) {
+		return !_maze.isWall(pos.getX() + action.get_vx(), pos.getY() + action.get_vy());
+	}
+
+	public ArrayList<AgentAction> getLegalActions(PositionAgent pos) {
+
+		ArrayList<AgentAction> legalMoves = new ArrayList<AgentAction>();
+		for(int i =0; i < 4; i++) {
+			AgentAction action = new AgentAction(i);
+
+			if(this.isLegalMove(pos, action)) {
+				legalMoves.add(action);
+			}
+		}
+		return legalMoves;
 	}
 
 	public boolean isLegalMovePacman(AgentAction action) {
 		
 		if (pacman.is_alive()) {
-			return !_maze.isWall(pacman.get_position().getX() + action.get_vx(),
-					pacman.get_position().getY() + action.get_vy());
+			return isLegalMove(pacman.get_position(), action);
 		}
 		return false;
 	}
@@ -277,8 +351,12 @@ public class PacmanGame extends Game  {
 				this.nbFood -= 1;
 			}
 		}
+	}
 
-
+	public PositionAgent movePosition(PositionAgent pos, AgentAction action) {
+		int dirX = pos.getX() + action.get_vx();
+		int dirY = pos.getY() + action.get_vy();
+		return new PositionAgent(dirX, dirY, action.get_idAction());
 	}
 
 	public boolean samePosition(Agent a1, Agent a2) {

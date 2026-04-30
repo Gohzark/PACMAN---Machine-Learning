@@ -119,6 +119,6 @@ public class TabularQLearning extends QLearningStrategy{
 
 	@Override
 	public String toString() {
-		return "Tabular Q-Learning";
+		return "Tabular-Q-Learning";
 	}
 }

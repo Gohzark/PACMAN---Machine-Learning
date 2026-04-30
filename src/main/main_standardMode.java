@@ -111,6 +111,7 @@ public class main_standardMode {
 					_maze.getSizeY(), true, _maze.getNbWalls());
 
 		}
+		String version =  "level" + level + "_" + strat.toString() + "_version";
 
 		// Nombre de simulations lancees en séquentiel en mode train
 		int Ntrain = 100;
@@ -120,10 +121,13 @@ public class main_standardMode {
 		int Ntest = 100;
 		int generation = 0;
 		int maxGeneration = 100;
+
 		// A changer pour ne pas écraser les résultats précédents
-		String filePath = "level0_Tabular_config1";
-		String version = "v1";
-		PrintWriter writer = initializeCSV(filePath, version, strat.toString(), level, gamma, epsilon, learningRate);
+		int versionNb = 1;
+
+		version += versionNb;
+		String str_dir = "outputs/level" + level + "/" + strat.toString() + "/" + "version" + versionNb;
+		PrintWriter writer = initializeCSV(str_dir, version, strat.toString(), level, gamma, epsilon, learningRate);
 		while (generation < maxGeneration) {
 
 			System.out.println("Generation : " + generation);
@@ -151,14 +155,9 @@ public class main_standardMode {
 			generation += 1;
 		}
 		try {
-			String str_dir = "outputs/level_" + level;
-			String str_dir_version = str_dir + "/" + version;
-			String str_dir_ressources = str_dir_version + "/ressources";
-			String str_dir_plots = str_dir_version + "/plots";
 			PlotRunner.generate(
-				java.nio.file.Path.of(str_dir_ressources + "/score_" + filePath + ".csv"),
-				java.nio.file.Path.of(str_dir_ressources + "/config_" + filePath + ".json"),
-				java.nio.file.Path.of(str_dir_plots)
+				java.nio.file.Path.of(str_dir),
+				version
 			);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -171,24 +170,12 @@ public class main_standardMode {
 		writer.flush();
 	}
 
-	public static PrintWriter initializeCSV(String filePath, String version, String strategy, int level, double gamma, double epsilon, double learningRate) {
+	public static PrintWriter initializeCSV(String dirPath, String version, String strategy, int level, double gamma, double epsilon, double learningRate) {
 		try {
-			String str_dir = "outputs/level_" + level;
-			String str_dir_version = str_dir + "/" + version;
-			String str_dir_ressources = str_dir_version + "/ressources";
-			String str_dir_plots = str_dir_version + "/plots";
-			File dir = new File(str_dir);
+			File dir = new File(dirPath);
 			dir.mkdirs();
-			File dir_version = new File(str_dir_version);
-			dir_version.mkdirs();
-			File dir_ressources = new File(str_dir_ressources);
-			dir_ressources.mkdirs();
-			File dir_plots = new File(str_dir_plots);
-			dir_plots.mkdirs();
-			File file_score = new File(str_dir_ressources + "/score_" + filePath + ".csv");
-			File file_config = new File(str_dir_ressources + "/config_" + filePath + ".json");
-			file_score.createNewFile();
-			file_config.createNewFile();
+			File file_score = new File(dirPath + "/" + version + "_scores.csv");
+			File file_config = new File(dirPath + "/" + version + "_config.json");
 			PrintWriter writerScore = new PrintWriter(new FileWriter(file_score, false));
 			PrintWriter writerConfig = new PrintWriter(new FileWriter(file_config, false));
 			writerScore.println("generation,train_score,test_score");

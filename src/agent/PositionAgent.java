@@ -43,9 +43,13 @@ public class PositionAgent implements Serializable {
 	public String toString() {
 		return "(" + x + "," + y + ")";
 	}
-	
-	public boolean equals(PositionAgent other) {
-		return (x == other.x) && (y == other.y);
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof PositionAgent)) return false;
+		PositionAgent other = (PositionAgent) o;
+		return this.getX() == other.getX() && this.getY() == other.getY();
 	}
 
 }
