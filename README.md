@@ -4,7 +4,9 @@ Ce projet permet d'exécuter quelques algorithmes d'apprentissage artificiel bas
 
 ## Installation
 
+```bash
 git clone https://github.com/Gohzark/PACMAN---Machine-Learning.git
+```
 
 ## Prérequis
 
